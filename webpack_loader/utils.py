@@ -1,6 +1,7 @@
 import re
 import json
 import time
+from urllib.request import urlopen
 
 from django.conf import settings
 from django.contrib.staticfiles.storage import staticfiles_storage
@@ -29,8 +30,9 @@ def get_assets():
     try:
         return json.loads(open(config['STATS_FILE']).read())
     except IOError:
-        raise IOError('Error reading {}. Are you sure webpack has generated '
-                      'the file and the path is correct?'.format(config['STATS_FILE']))
+        response = urlopen(config['STATS_FILE'])
+        str_response = response.readall().decode('utf-8')
+        return json.loads(str_response)
 
 
 def filter_files(files):
